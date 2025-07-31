@@ -1,20 +1,24 @@
 package com.ecommerce.project.model;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
+        })
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -24,25 +28,53 @@ public class User {
     @Size(max = 20)
     @Column(name = "username")
     private String username;
-    @NotBlank
-    @Size(max = 120)
-    @Column(name = "password")
-    private String password;
+
     @NotBlank
     @Size(max = 50)
     @Email
     @Column(name = "email")
     private String email;
 
-    public User(Long userId) {
-        this.userId = userId;
+    @NotBlank
+    @Size(max = 120)
+    @Column(name = "password")
+    private String password;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id"))
+    private List<Address> addresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true)
+    private Set<Product> products;
+
+    // -----------------------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------------------
+
+    public User() {
+        // no-args constructor
     }
 
-    public User(String username, String password, String email) {
+    public User(String username, String email, String password) {
         this.username = username;
-        this.password = password;
         this.email = email;
+        this.password = password;
     }
+
+    // -----------------------------------------------------------------------
+    // Getters and Setters
+    // -----------------------------------------------------------------------
 
     public Long getUserId() {
         return userId;
@@ -60,14 +92,6 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -76,62 +100,98 @@ public class User {
         this.email = email;
     }
 
+    /**
+     * Note: consider storing only a password hash, not the raw password.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Note: consider hashing before setting.
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+        if (roles == null) {
+            this.roles = new HashSet<>();
+        } else {
+            this.roles = roles;
+        }
     }
-
-    public User(Set<Role> roles) {
-        this.roles = roles;
-    }
-
 
     public List<Address> getAddresses() {
         return addresses;
     }
 
     public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
+        if (addresses == null) {
+            this.addresses = new ArrayList<>();
+        } else {
+            this.addresses = addresses;
+        }
     }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
+
+    // -----------------------------------------------------------------------
+    // equals & hashCode
+    // -----------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+
+        if (userId != null && user.userId != null) {
+            return Objects.equals(userId, user.userId);
+        }
+
+        return Objects.equals(username, user.username)
+                && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return (userId != null)
+                ? Objects.hash(userId)
+                : Objects.hash(username, email);
+    }
+
+    // -----------------------------------------------------------------------
+    // toString
+    // -----------------------------------------------------------------------
 
     @Override
     public String toString() {
         return "User{" +
                 "userId=" + userId +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", roles=" + roles +
-                ", addresses=" + addresses +
-                ", products=" + products +
+                ", roles=" + (roles != null ? roles.size() : 0) +
+                ", addresses=" + (addresses != null ? addresses.size() : 0) +
                 '}';
     }
 
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)
-    @JoinTable(name = "users_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinTable(name ="users_address",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id"))
-    private List<Address> addresses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE}
-    ,orphanRemoval = true)
-    private Set<Product>products;
-
-    public Set<Product> getProducts() {
-        return products;
-    }
-    public void setProducts(Set<Product> products) {
+    public User(Long userId, String username, String email, String password, Set<Role> roles, List<Address> addresses, Set<Product> products) {
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+        this.addresses = addresses;
         this.products = products;
     }
-
-
 }

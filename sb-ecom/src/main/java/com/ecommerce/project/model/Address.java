@@ -129,4 +129,15 @@ public class Address {
                 ", users=" + users +
                 '}';
     }
+
+    public Address(Long addressId, String street, String buildingName, String city, String state, String country, String pincode, List<User> users) {
+        this.addressId = addressId;
+        this.street = street;
+        this.buildingName = buildingName;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.pincode = pincode;
+        this.users = users;
+    }
 }
