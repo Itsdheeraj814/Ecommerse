@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "product")
 public class Product {
@@ -27,6 +30,9 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},fetch = FetchType.EAGER)
+    private List<CartItem> products = new ArrayList<>();
+
     // No-arg constructor
     public Product() {
     }
@@ -40,9 +46,21 @@ public class Product {
         this.price = price;
         this.specialPrice = specialPrice;
         this.category = category;
+
     }
 
-    // Getters and Setters
+    public Product(List<CartItem> products) {
+        this.products = products;
+    }
+// Getters and Setters
+
+    public List<CartItem> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<CartItem> products) {
+        this.products = products;
+    }
 
     public Long getProductId() {
         return productId;
@@ -149,6 +167,7 @@ public class Product {
                 ", quantity=" + quantity +
                 ", image='" + image + '\'' +
                 ", price=" + price +
+                ", products=" + products +
                 ", discount=" + discount +
                 ", specialPrice=" + specialPrice +
                 ", category=" + category +

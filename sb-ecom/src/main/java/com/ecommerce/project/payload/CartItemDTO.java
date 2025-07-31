@@ -1,33 +1,17 @@
-package com.ecommerce.project.model;
+package com.ecommerce.project.payload;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "cart_items")
-public class CartItem {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CartItemDTO {
     private Long cartItemId;
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-
+    private CartDTO cart;
+    private ProductDTO product;;
     private Integer quantity;
     private double discount;
     private double productPrice;
 
-    // No-args constructor
-    public CartItem() {
-    }
 
-    // All-args constructor
-    public CartItem(Long cartItemId, Cart cart, Product product, Integer quantity, double discount, double productPrice) {
+    public CartItemDTO() {
+    }
+    public CartItemDTO(Long cartItemId, CartDTO cart, ProductDTO product, Integer quantity, double discount, double productPrice) {
         this.cartItemId = cartItemId;
         this.cart = cart;
         this.product = product;
@@ -36,7 +20,6 @@ public class CartItem {
         this.productPrice = productPrice;
     }
 
-    // Getters and Setters
     public Long getCartItemId() {
         return cartItemId;
     }
@@ -45,19 +28,19 @@ public class CartItem {
         this.cartItemId = cartItemId;
     }
 
-    public Cart getCart() {
+    public CartDTO getCart() {
         return cart;
     }
 
-    public void setCart(Cart cart) {
+    public void setCart(CartDTO cart) {
         this.cart = cart;
     }
 
-    public Product getProduct() {
+    public ProductDTO getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(ProductDTO product) {
         this.product = product;
     }
 
@@ -83,19 +66,5 @@ public class CartItem {
 
     public void setProductPrice(double productPrice) {
         this.productPrice = productPrice;
-    }
-
-    // toString()
-
-    @Override
-    public String toString() {
-        return "CartItem{" +
-                "cartItemId=" + cartItemId +
-                ", cart=" + cart +
-                ", product=" + product +
-                ", quantity=" + quantity +
-                ", discount=" + discount +
-                ", productPrice=" + productPrice +
-                '}';
     }
 }

@@ -24,6 +24,22 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
+
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+    ,orphanRemoval = true)
+    private Cart cart;
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+    public User(Cart cart) {
+        this.cart = cart;
+    }
+
     @NotBlank
     @Size(max = 20)
     @Column(name = "username")
@@ -34,6 +50,7 @@ public class User {
     @Email
     @Column(name = "email")
     private String email;
+
 
     @NotBlank
     @Size(max = 120)
@@ -194,4 +211,6 @@ public class User {
         this.addresses = addresses;
         this.products = products;
     }
+
+
 }
