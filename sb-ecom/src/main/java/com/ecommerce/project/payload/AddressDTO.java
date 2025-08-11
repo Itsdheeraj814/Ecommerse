@@ -1,51 +1,23 @@
-package com.ecommerce.project.model;
+package com.ecommerce.project.payload;
 
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.ecommerce.project.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "addresses")
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class AddressDTO {
     private Long addressId;
-
-    @NotBlank
-    @Size(min=5,message = "Street name should conatin 5 characters")
     private String street;
-
-    @NotBlank
-    @Size(min=5,message = "Building name should conatin 5 characters")
     private String buildingName;
-
-    @NotBlank
-    @Size(min=5,message = "city name should conatin4 characters")
     private String city;
-
-    @NotBlank
-    @Size(min=5,message = "state name should conatin 2 characters")
     private String state;
-
-    @NotBlank
-    @Size(min=5,message = "country name should conatin 2 characters")
     private String country;
-
-    @NotBlank
-    @Size(min=5,message = "pincode name should conatin 6 characters")
     private String pincode;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User  user;
+    public AddressDTO() {
 
-    public Address() {}
-
-    public Address(Long addressId, String street, String buildingName, String pincode, String country, String state, String city) {
+    }
+    public AddressDTO(Long addressId, String street, String buildingName, String pincode, String country, String state, String city) {
         this.addressId = addressId;
         this.street = street;
         this.buildingName = buildingName;
@@ -111,13 +83,7 @@ public class Address {
         this.pincode = pincode;
     }
 
-    public User getUsers() {
-        return user;
-    }
 
-    public void setUsers(User users) {
-        this.user = users;
-    }
 
     @Override
     public String toString() {
@@ -129,23 +95,8 @@ public class Address {
                 ", state='" + state + '\'' +
                 ", country='" + country + '\'' +
                 ", pincode='" + pincode + '\'' +
-                ", users=" + user +
+
                 '}';
     }
 
-    public Address(User users) {
-        this.user = users;
-    }
-
-    public Address(Long addressId, String street, String buildingName, String city, String state, String country, String pincode, List<User> users) {
-        this.addressId = addressId;
-        this.street = street;
-        this.buildingName = buildingName;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.pincode = pincode;
-
-
-    }
 }
